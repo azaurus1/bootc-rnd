@@ -1,0 +1,5 @@
+FROM quay.io/samueldasilva/ubuntu-bootc:latest
+RUN mkdir -p /var/lib/jellyfin \
+    && chown -R 1000:1000 /var/lib/jellyfin
+RUN  mkdir -p /etc/containers/systemd
+COPY jellyfin.container /etc/containers/systemd
