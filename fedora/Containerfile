@@ -1,0 +1,5 @@
+FROM quay.io/centos-bootc/centos-bootc:stream9
+RUN mkdir -p /var/lib/jellyfin \
+    && chown -R 1000:1000 /var/lib/jellyfin
+RUN  mkdir -p /etc/containers/systemd
+COPY jellyfin.container /etc/containers/systemd
