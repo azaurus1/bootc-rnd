@@ -1,0 +1,27 @@
+FROM quay.io/centos-bootc/centos-bootc:stream9
+
+COPY ./embed_image.sh /usr/bin/
+COPY ./copy_embedded_images.sh /usr/bin/
+
+# install both Podman and its modern network stack
+RUN dnf install -y podman netavark aardvark-dns
+
+# explicitly tell Podman to use netavark
+RUN mkdir -p /etc/containers && \
+    printf "[network]\nnetwork_backend=\"netavark\"\n" > /etc/containers/containers.conf
+
+
+# make sure both helper scripts are executable
+RUN chmod 755 /usr/bin/embed_image.sh /usr/bin/copy_embedded_images.sh
+
+RUN /usr/bin/embed_image.sh docker.io/jellyfin/jellyfin:latest
+
+COPY embedded-images-import.service /etc/systemd/system/
+RUN chmod 755 /usr/bin/copy_embedded_images.sh && \
+    systemctl enable embedded-images-import.service
+
+
+RUN mkdir -p /var/lib/jellyfin \
+    && chown -R 1000:1000 /var/lib/jellyfin
+
+COPY jellyfin.container /etc/containers/systemd

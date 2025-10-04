@@ -1,0 +1,13 @@
+[Unit]
+Description=Import embedded container images into Podman store
+After=local-fs.target systemd-remount-fs.service var.mount
+Wants=network-pre.target
+ConditionPathExists=/usr/lib/containers-image-cache/mapping.txt
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/copy_embedded_images.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
